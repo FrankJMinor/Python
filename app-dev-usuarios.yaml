@@ -1,0 +1,206 @@
+openapi: 3.0.3
+
+info:
+  version: 0.0.1
+  title: App Usuarios
+  description: |
+      Aplicación para la operación de usuarios en los distintitos aplicativos y servicios a
+      realizar operaciones diarias. Este servicio no se basa en un modelo MVC.
+
+servers: 
+  - url: https:\\0.0.0.0:5001
+
+tags:
+  - name: Usuario
+
+paths:
+  # This is a endpoint path.
+  '/v1/usuario/crearUsuario':
+    post:
+      description: Crear usuario en la base de datos.
+      tags:
+        - Usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object 
+              required:
+                - name
+                - apellido1
+              properties:
+                nombre:
+                  type: string
+                  example: "Francisco Javier"
+                  description: "Nombre(s) del usuario que se registrara en la aplicación"
+                  maximum: 25
+                apellidoMaterno:
+                  type: string
+                  example: "Javier"
+                  description: "Apellido paterno del usuario"
+                  maximum: 15
+                apellidoPaterno:
+                  type: string
+                  example: "Granados"
+                  description: "Apellido materno del usuario "
+                  maximum: 15
+                email:
+                  type: string
+                  example: "test@test.com"
+                  description: "Correo electronico con el que se registrara en la aplicación"
+                  maximum: 50
+                celular:
+                  type: string
+                  example: "5511223344"
+                  description: "Número de celular o casa a 10 digitos"
+                  maximum: 10
+                estadoCivil:
+                  type: string
+                  example: "Soltero"
+                  description: "Estado civil del usuario definidos en el catalogo de Estado Civil"
+                  maximum: 15
+                tipoVivienda:
+                  type: string
+                  example: "Casa"
+                  maximum: 15
+                tiempoDomicilio:
+                  type: string
+                  example: "14 años 2 meses"
+                  description: "Tiempo de recidir en el domicilio en años y meses"
+                  maximum: 16
+                ingresoMensual:
+                  type: string
+                  example: "10000 - 20000"
+                  description: "Rango del sueldo percibido men cual"
+                  maximum: 15
+                ocupacion:
+                  type: string
+                  example: "Ingeniero en Computación"
+                  description: "Profesión u ocupación"
+                rfc:
+                  type: string
+                  example: "FJG991231HD"
+                  description: "Registro Federal del Contribuyente ante el SAT"
+                  maximum: 13
+                tipo:
+                  type: string
+                  example: "Persona"
+                  maximum: 8
+                curp:
+                  type: string
+                  example: "FJGG991231HDFAAA12"
+                  description: "Clave Única de Registro de Población"
+                  maximum: 18
+                numeroINE:
+                  type: string
+                  example: "IDMEX1927655531<<546484324689410198H231586485MEX"
+                  description: "Id de la identifiación oficial"
+                direccion:
+                  type: object
+                  description: "Datos del domicilio"
+                  properties:
+                    linea1Direccion:
+                      type: string
+                      example: "Calle 999"
+                      description: "Priemra parte de la dirección que le aparece en documentos 
+                                    como en recibos de luz o estados de cuenta bancarios"
+                    linea2Direccion:
+                      type: string
+                      example: "Calle 999"
+                      description: "Segunda parte de la dirección que le aparece en documentos 
+                                    como en recibos de luz o estados de cuenta bancarios"
+                    codigoPostal:
+                      type: string
+                      example: 15000
+                      description: "Codigo Postal"
+                      maximum: 5
+                    estadoProvincia:
+                      type: string
+                      example: "Ciudad de México"
+      responses:
+        '201':
+          description: Cuenta del usuario creada con exito
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Usuario creado con exito"
+
+        '404':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref:  "#/components/schemas/Error_description_user"
+
+components:
+  #Authentication
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  # Schemas is a map of names to Schema objects
+  schemas:
+
+    #Estrucutra de mensaje de errores en la API
+    Error_description_user:
+      title: Error description
+      type: object
+      properties:
+          error:
+            description: |
+              contain all information about that who caused the error
+            items:
+              $ref: '#/components/schemas/details'
+          message:
+            description: |
+              Mensaje de error para el ususario final
+            example: "Error al crear cuenta en TotalPlay Fintech"
+    details:
+      title: Description about of error, this is for the programmer
+      type: object
+      properties:
+        type:
+          example: "<class 'Error.custom_exceptions.ErrorCreateUser'>"
+          description: |
+            Modelo de error dentro del proceso de la API para el programador
+        details:
+          description: |
+            Descripción de error para el programador acompañado de el codigo HTTP de error
+          type: string
+          example: "(Error al registrar al usuario en la base de datos, <HTTPStatus.BAD_REQUEST: 400>)"
+
+    Error_description_solicitud:
+      title: Error description
+      type: object
+      properties:
+          error:
+            description: |
+              contain all information about that who caused the error
+            items:
+              $ref: '#/components/schemas/detailSolicitud'
+          message:
+            description: |
+              Mensaje de error para el ususario final
+            example: "Error al crear solicitud de cobro"
+    detailSolicitud:
+      title: Description about of error, this is for the programmer
+      type: object
+      properties:
+        type:
+          example: "<class 'Errors.IncorrectRequest.VerifyAmountDecimals'>"
+          description: |
+            Modelo de error dentro del proceso de la API para el programador
+        details:
+          description: |
+            Descripción de error para el programador acompañado de el codigo HTTP de error
+          type: string
+          example: "EL monto total debe contener solo dos decimales despues del punto decimal -> 6.66"
+        http_code:
+          description: |
+            Codigo de error del servicio consultado
+          type: string
+          example: "HTTPStatus.BAD_REQUEST 400"
